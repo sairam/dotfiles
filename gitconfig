@@ -1,0 +1,65 @@
+[github]
+  user = sairam
+  token = mytoken
+
+[user]
+  # Uses GAS
+  name = Sairam Kunala
+  email = sairam.kunala@gmail.com
+
+[core]
+  excludesfile = /Users/ram/.gitignore_global
+  editor = mate -w
+  quotepath = false
+  pager = less -r
+  # if ↑ doesn’t work, try: pager = less -+$LESS -FRX
+
+[color]
+  ui = true
+  status = auto
+  branch = auto
+  interactive = auto
+  diff = auto
+
+[alias]
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(magenta)%an%Creset %C(blue)<%ae>%Creset ' --abbrev-commit --date=relative
+  co = checkout
+  s = status
+  webui = !echo "`git config --get webui.url`/blob/`git branch  | grep '*' | cut -f2 -d' '`"
+  ci = commit
+  a = !git add -A . && git status
+  df = !git diff | mate
+  dfa = !git diff HEAD -- | mate
+  ex = ls-files -o -i --exclude-standard
+  d = diff --color-words
+  alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
+  cl = !git config --list
+  # legit
+  switch = !legit switch \"$@\"
+  branches = !legit branches
+  sprout = !legit sprout \"$@\"
+  unpublish = !legit unpublish \"$@\"
+  harvest = !legit harvest \"$@\"
+  sync = !legit sync \"$@\"
+  publish = !legit publish \"$@\"
+  graft = !legit graft \"$@\"
+# git shortlog -sn
+
+[apply]
+  whitespace = nowarn
+
+#git config --global mergetool.[tool].cmd [command-line call]
+#git config --global mergetool.[tool].trustExitCode [true|false]
+#file merge for mac using opendiff command
+
+[difftool]
+  prompt = false
+
+[mergetool "sourcetree"]
+  cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+  trustExitCode = true
+
+[dude]
+  icon = /Users/ram/.git-dude/github_32.png
+  interval = 30
+  notify-command = echo -e \"$TITLE\\n\\n\\n$DESCRIPTION\" | espeak --stdin -k20 -ven+12

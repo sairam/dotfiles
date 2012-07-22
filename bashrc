@@ -1,4 +1,13 @@
-export PATH=/usr/local/bin:$PATH:/usr/local/mysql/bin/:/opt/local/bin/:/usr/local/sbin
+export PATH=$PATH:/usr/local/bin:/usr/local/mysql/bin/:/opt/local/bin/:/usr/local/sbin
+
+# Add RVM to PATH for scripting
+PATH=$PATH:$HOME/.rvm/bin
+
+# export RUBY_HEAP_MIN_SLOTS=1000000
+# export RUBY_HEAP_SLOTS_INCREMENT=1000000
+# export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1
+# export RUBY_GC_MALLOC_LIMIT=1000000000
+# export RUBY_HEAP_FREE_MIN=500000
 
 export HISTCONTROL=erasedups
 export HISTSIZE=100000
@@ -185,8 +194,6 @@ alias gdiff="git diff --no-index --color-words"
 alias ttr="touch tmp/restart.txt"
 alias rtr="rm tmp/restart.txt"
 
-
-
 function ahttp_proxy {
   enactive=`ifconfig | egrep "(([0-9]{1,3}\.){3})[0-9]+" --color=always -B 4 | grep "^en"|cut -f1 -d:|tail -1`
 
@@ -248,20 +255,25 @@ alias r="rlwrap -c"
 [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion # for RVM completion
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 
-
+# Load if present
+function load_file() {
+  if [ -f $@ ]; then
+    . $@
+  fi
+}
 # Access directories w/o telling the path via Autojump
-if [ -f `brew --prefix`/etc/autojump ]; then
-  . `brew --prefix`/etc/autojump
-fi
+load_file `brew --prefix`/etc/autojump
+# Project specific config
+load_file ~/.bash_project_specific.sh
+# NVM
+load_file ~/.nvm/nvm.sh
 
-if [ -f ~/.bash_project_specific.sh ]; then
-  . ~/.bash_project_specific.sh
-fi
+# water - https://github.com/rubychan/water
+## The diff washing machine. See your code changes clearly
+
+# gas - git user switch
+
 # source "`brew --prefix grc`/etc/grc.bashrc"
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-
-. ~/.nvm/nvm.sh
 
 # ^X^E (Ctrl-X Ctrl-E)
 # Stop using the arrow keys and navigate the command line more quickly with
