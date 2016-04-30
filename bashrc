@@ -1,8 +1,16 @@
-export PATH=$PATH:/usr/local/bin:/usr/local/mysql/bin/:/opt/local/bin/:/usr/local/sbin
+export PATH=/usr/local/bin:/usr/local/mysql/bin/:/opt/local/bin/:/usr/local/sbin:$PATH
 
 # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/.rvm/bin
 
+# EC2 Stuff
+# ec2 command line tools
+export JAVA_HOME="$(/usr/libexec/java_home)"
+export EC2_PRIVATE_KEY="$(/bin/ls $HOME/.ec2/pk-*.pem)"
+export EC2_CERT="$(/bin/ls $HOME/.ec2/cert-*.pem)"
+export EC2_HOME="/usr/local/Cellar/ec2-api-tools/1.5.5.0/jars/"
+
+alias gti=git
 # export RUBY_HEAP_MIN_SLOTS=1000000
 # export RUBY_HEAP_SLOTS_INCREMENT=1000000
 # export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1
@@ -12,8 +20,13 @@ PATH=$PATH:$HOME/.rvm/bin
 export HISTCONTROL=erasedups
 export HISTSIZE=100000
 export EDITOR="mate -w"
-shopt -s histappend
+#shopt -s histappend
 stty -ixon
+
+export LSCOLORS=ExFxCxDxBxegedabagacad
+export CLICOLOR=1
+
+export MANPATH=/opt/local/share/man:$MANPATH
 
 export COLOR_NC='\033[0m' # No Color
 export COLOR_WHITE='\033[1;37m'
@@ -106,9 +119,11 @@ function gitwebui {
    open `git webui`/$1
 }
 
-if [ -f `brew --prefix`/etc/bash_completion.d/git-completion.bash ]; then source `brew --prefix`/etc/bash_completion.d/git-completion.bash; fi # for Git completion
+if [ -f `brew --prefix`/etc/bash_completion.d/git-prompt.sh ]; then source `brew --prefix`/etc/bash_completion.d/git-prompt.sh; fi # for Git completion
 
 # Bash Helpers
+bind 'set completion-ignore-case on'
+bind 'set show-all-if-ambiguous on'
 
 ## create a directory and cd into it
 md() { mkdir -p "$@" && cd "$@"; }
@@ -166,7 +181,9 @@ pman () {
 tman () {
   MANWIDTH=160 MANPAGER='col -bx' man $@ | mate
 }
-
+ccat () {
+  pygmentize -Ofull,style=colorful -f html $@ | bcat
+}
 # mdfind - spotlight find from commandline
 
 # invoke control +F via apple script
@@ -203,6 +220,9 @@ function ahttp_proxy {
      ;;
   en1)
      device="Wi-Fi"
+     ;;
+  en4)
+     device="Huawei"
      ;;
   esac
   # device="Wi-Fi"
@@ -241,15 +261,28 @@ ahttp_proxy
 #systemsetup -setusingnetworktime on
 #systemsetup -setnetworktimeserver time.asia.apple.com
 
+source `xcode-select --print-path`/usr/share/git-core/git-completion.bash
+source `xcode-select --print-path`/usr/share/git-core/git-prompt.sh
+
 # GIT
-source /usr/local/etc/bash_completion.d/git-completion.bash
+#source /usr/local/etc/bash_completion.d/git-completion.bash
 
 export PS1="\[\033[01;34m\]\$(~/.rvm/bin/rvm-prompt) \[\033[01;32m\]\w\[\033[00;33m\]\$(__git_ps1 \" (%s)\") \[\033[01;36m\]⚡\[\033[00m\] "
+
+# Source Highlight - brew install source-highlight
+
+alias kat="src-hilite-lesspipe.sh"
 
 # RLWrap the ultimate wrapper for CLI
 alias rib="rlwrap -c irb"
 alias r="rlwrap -c"
 
+alias add=awk '{s+=$1}END{print s}' 
+
+function dict() {
+  echo $1 >> ~/.dict
+}
+alias sshh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 # Last but not the least - RVM
 
 [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion # for RVM completion
@@ -261,18 +294,26 @@ function load_file() {
     . $@
   fi
 }
+function pbsay() {
+  pbpaste | say
+}
 # Access directories w/o telling the path via Autojump
 load_file `brew --prefix`/etc/autojump
 # Project specific config
-load_file ~/.bash_project_specific.sh
+#load_file ~/.bash_project_specific.sh
 # NVM
-load_file ~/.nvm/nvm.sh
+#load_file ~/.nvm/nvm.sh
 
 # water - https://github.com/rubychan/water
 ## The diff washing machine. See your code changes clearly
 
 # gas - git user switch
 
+# DOS a site
+# hping3 --rand-source -p 80 -S --flood Victim_ip
+# convert a dmg into iso
+#  hdiutil convert /path/to/filename.dmg -format UDTO -o /path/to/savefile.iso
+# #hdiutil makehybrid -iso -joliet -hfs -o OSXLion.iso Lion.dmg
 # source "`brew --prefix grc`/etc/grc.bashrc"
 
 # ^X^E (Ctrl-X Ctrl-E)
@@ -294,3 +335,17 @@ load_file ~/.nvm/nvm.sh
 #
 # ctrl+K: delete from the cursor to the end of the line
 # Esc + .  ; Esc + Ctrl E
+
+function mkurl(){
+	echo $1 
+	echo $2
+if [ ! -f $2.url ]; then
+cat <<EOF > $2.url
+[InternetShortcut]
+URL=$1
+EOF
+	echo "created file $2.url"
+else
+	echo "file already exists"
+fi
+}
